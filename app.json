@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "VibeSmith",
-    "slug": "VibeSmith",
+    "name": "VYBESMITH",
+    "slug": "VYBESMITH",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/sensors/main.png",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/Splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -21,12 +21,13 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/sensors/main.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.museworks.vybesmith"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/sensors/main.png"
     }
   }
 }
