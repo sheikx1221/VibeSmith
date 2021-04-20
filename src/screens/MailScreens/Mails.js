@@ -12,7 +12,6 @@ import Payment from './Payments';
 import { EMAIL_API, AUTH_KEY } from '@env';
 import * as MailComposer from 'expo-mail-composer';
 
-const screens = ["Cart","UserInfo","Payment","SendLogs"];
 let _screenNow = "Cart";
 let manualOverride = false;
 const Mails = (props) => {
@@ -79,22 +78,31 @@ const Mails = (props) => {
         });
     }
     async function fetchFilePath(){
+        let _filePath = "";
         if(!SensorDatabase.checkDatabaseRunning()){
             await SensorDatabase.startDataBase();
         }
-        await SensorDatabase.fetchAll().then((dataRecords)=>{
-            setShowActivity(true);
-            if(dataRecords.length>0){
-                setLoading("Converting Logs into CSV File");
-                setTimeout(async() => {
-                    await SensorDatabase.saveToFile(uuid, dataRecords, blocks).then(filepath=>{
-                        setLoading("New Sensor Data file has been created!");
-                        if(_screenNow === "SendLogs") setShowActivity(false);
-                        setFilePath(filepath);
-                    });
-                }, 3000);
+        setShowActivity(true);
+        try {
+            const dataRecords =  await SensorDatabase.fetchAll();
+            if(dataRecords.length > 0 ) {
+                const filePath = await SensorDatabase.saveToFile(uuid, dataRecords, blocks);
+                _filePath = filePath;
+                if(_screenNow === "SendLogs") {
+                    setFilePath(filePath);
+                    setTimeout(() => {
+                        setMessageIndex(3);
+                        setShowActivity(false);
+                    }, 5000);
+                }
             }
-        });
+        }
+        catch(err){
+            setMessageIndex(3);
+            setScreenNow("FileError");
+            setShowActivity(false);
+        }
+        return _filePath;
     }
     function scrollToTop(){
         MainScroll.current.scrollTo({ y: 0, animated: true});
@@ -106,9 +114,10 @@ const Mails = (props) => {
         if(screenNow === "UserInfo") setMessageIndex(0);
         if(screenNow === "SendLogs"){
             fetchFilePath().then(async res=>{
+                if (res == "") return;
                 const body = new FormData();
                 body.append('csv', {
-                    uri: filePath,
+                    uri: res,
                     name: "sensorData.csv",
                     type: "application/csv"
                 });
@@ -128,26 +137,19 @@ const Mails = (props) => {
                     }
                 }
                 await fetch(EMAIL_API, data).then(res=>res.json()).then(result=>{
+                    console.log(result);
                     if(!result.success) throw result.response.err;
                     setMessageIndex(3);
                     setShowActivity(false);
                 }).catch(err=>{
-                    console.log(err);
                     setMessageIndex(3);
                     setScreenNow("ErrorWhileSendingVybes");
-                    Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err.code+"\n");
+                    Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err.code || err+"\n");
                     setShowActivity(false);
                 });
-                // setTimeout(() => {
-                //     setScreenNow("ErrorWhileSendingVybes");
-                //     Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: 400");
-                //     setShowActivity(false);
-                // }, 2000);
             }).catch(Err=>{
-                console.log(Err);
                 setMessageIndex(3);
                 setScreenNow("ErrorWhileSendingVybes");
-                Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err.code+"\n");
                 setShowActivity(false);
             });
         }
@@ -329,6 +331,22 @@ const Mails = (props) => {
                 )}
                 </View>
             )}
+            {screenNow == "FileError" && (
+                <View style={{justifyContent:'center', height: height*0.70}}>
+                    <Text style={CommonStyles.Heading(colors.primary)}>Failed to create logs for VybeSmith</Text>
+                    <Text style={CommonStyles.SubText(colors.primary)}>Please Check Permissions for file storage and try again</Text>
+                    <View style={CommonStyles.ParaView()}>
+                        <Text style={CommonStyles.ParaText()}>Please Retry by pressing the button below</Text>
+                    </View>
+                    <TouchableOpacity style={[CommonStyles.VybeButtonView(colors.border),{width: '60%', marginLeft: 20, marginTop: 30}]} onPress={async()=>{
+                        setMessageIndex(2);
+                        setShowActivity(true);
+                        setScreenNow("SendLogs");
+                    }}>
+                        <Text style={CommonStyles.VybeButtonText(colors.background)}>RETRY</Text>
+                    </TouchableOpacity>                    
+                </View>
+            )} 
             {screenNow == "ErrorWhileSendingVybes" && (
                     <View style={{justifyContent:'center', height: height*0.70}}>
                     <Text style={CommonStyles.Heading(colors.primary)}>Failed while Sending Vybes</Text>
@@ -337,6 +355,7 @@ const Mails = (props) => {
                         <Text style={CommonStyles.ParaText()}>Please Retry by pressing the button below</Text>
                     </View>
                     <TouchableOpacity style={[CommonStyles.VybeButtonView(colors.border),{width: '60%', marginLeft: 20, marginTop: 30}]} onPress={async()=>{
+                        setMessageIndex(2);
                         setShowActivity(true);
                         setScreenNow("SendLogs");
                     }}>
@@ -354,7 +373,7 @@ const Mails = (props) => {
                             setScreenNow("SendLogs");
                             setShowActivity(false);
                         }).catch(err=>{
-                            console.log(err);
+            
                         });
                     }}>
                         <Text style={CommonStyles.VybeButtonText(colors.background)}>SEND VIA MAIL SERVICE</Text>

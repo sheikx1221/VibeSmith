@@ -152,17 +152,17 @@ const Payment = (props) => {
                     props.handlerScreen();
                 }
                 else{
-                    const values = [cardHolder, cardNumber, cvc, expiryDate];
-                    for(let value of values){
-                        if(value === ""){
-                            Alert.alert("Incomplete Fields","Please Complete All Fields Before Adding Payment.");
-                            return;
-                        }
-                    }
-                    completePayment();
-                    // setTimeout(() => {
-                    //     setPayment(ErrorTypes.PAYMENT_SUCESSFULL);
-                    // }, 1000);
+                    // const values = [cardHolder, cardNumber, cvc, expiryDate];
+                    // for(let value of values){
+                    //     if(value === ""){
+                    //         Alert.alert("Incomplete Fields","Please Complete All Fields Before Adding Payment.");
+                    //         return;
+                    //     }
+                    // }
+                    // completePayment();
+                    setTimeout(() => {
+                        setPayment(ErrorTypes.PAYMENT_SUCESSFULL);
+                    }, 1000);
                 }
             }}>
                 {showActivity ? 
