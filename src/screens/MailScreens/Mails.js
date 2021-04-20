@@ -155,7 +155,6 @@ const Mails = (props) => {
         }
     },[screenNow]);
     function backPress(){
-        console.log(_screenNow);
         switch(_screenNow){
             case "Cart":
                 props.navigation.goBack();
@@ -368,7 +367,6 @@ const Mails = (props) => {
                             body: `${device}\n${phone}\n${uuid}`,
                             attachments: [filePath]
                         }).then(res=>{
-                            console.log("res = ",res);
                             manualOverride = true;
                             setScreenNow("SendLogs");
                             setShowActivity(false);
