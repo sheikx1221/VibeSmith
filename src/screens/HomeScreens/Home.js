@@ -26,7 +26,7 @@ const Home = (props) => {
                     </Text>
                 </View>
                 <TouchableOpacity style={CommonStyles.VybeButtonView(colors.border)} onPress={()=>{
-                    props.navigation.dangerouslyGetParent().navigate('TabAmulance');
+                    props.navigation.dangerouslyGetParent().navigate('TabRecording');
                 }}>
                     <Text style={CommonStyles.VybeButtonText(colors.background)}>START VYBING</Text>
                 </TouchableOpacity>

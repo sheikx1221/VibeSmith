@@ -13,7 +13,7 @@ const Detection = (props) => {
     const [activate,setActivate] = useState(false);
     const [progress, setProgress] = useState(0);
     const [currentSize,setCurrentSize] = useState("");
-    const [vibeName, setVibeName] = useState("MOVINNG");
+    const [vibeName, setVibeName] = useState(undefined);
     const isFocused = useIsFocused();
 
     function setActivateValue(value){
@@ -50,15 +50,16 @@ const Detection = (props) => {
     },[]);
     return(
         <View style={CommonStyles.MainView(colors.background)}>
-            {(vibeName == "" ? (
-                <DialogInput isDialogVisible={vibeName == "" ? true : false}
+            {(typeof vibeName=== "undefined" ? (
+                <DialogInput isDialogVisible={true}
                     title={"Enter A Vybe Name"}
                     message={"Uniquely Identify this moment by giving it a name"}
                     hintInput ={"Dancing, Moving, Party Mode"}
                     submitInput={ (inputText) => {setVibeName(inputText)} }
-                    closeDialog={ () => {if(vibeName == ""){
-                        Alert.alert('Please add a vybe name!','Vybe Name Cannot Be Empty')
-                    }}}>
+                    closeDialog={ () => {
+                        setVibeName("");
+                    }}
+                >
                 </DialogInput>  
             ) : (
                 <>
@@ -68,7 +69,7 @@ const Detection = (props) => {
                         <Text style={CommonStyles.SubText(colors.primary)}>YOUR ARE YOUR VYBESMITH</Text>
                         <View style={CommonStyles.ParaView()}>
                             <Text style={CommonStyles.ParaText(colors.primary)}>
-                                Press and hold to begin capturing your Vybe. Remember it's best if there is movement for atleast 30 seconds. So have fun with it! 
+                                Press and hold to begin capturing your Vybe. Remember it's best if there is movement for atleast 30 seconds. So have fun with it!{'\n'}
                             </Text>
                         </View>
                         <TouchableWithoutFeedback onLongPress={() => {
@@ -108,7 +109,7 @@ const Detection = (props) => {
                         <Text style={CommonStyles.Heading(colors.primary)}>{'VYBESMITH\nIS\nRUNNING'}</Text>
                         <Text style={CommonStyles.SubText(colors.primary)}>YOUR ARE YOUR VYBESMITH</Text>
                         <View style={CommonStyles.ParaView()}> 
-                            <Text style={CommonStyles.ParaText(colors.primary)}>Press and Hold the Stop Recording your Vybe. VybeSmith will save this data and will make your custom vybes.</Text>
+                            <Text style={CommonStyles.ParaText(colors.primary)}>Press and Hold the Stop Recording your Vybe. VybeSmith will save this data so we can start making your custom jewelry{'\n'}Vybes should be atleast 30s long</Text>
                         </View>
                         <TouchableWithoutFeedback onLongPress={() => {
                             setProgress(progress + 1);

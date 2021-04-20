@@ -43,7 +43,6 @@ const Payment = (props) => {
             setPayment(ErrorTypes.PAYMENT_FAILED);
             setActivity(false);
         });
-        
     }
 
     async function createToken(){

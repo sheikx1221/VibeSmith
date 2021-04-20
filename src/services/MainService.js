@@ -114,7 +114,6 @@ async function removeEvents(){
 async function startAllSensors(VibeName){
     if(VibeName){
         _VibeName = VibeName;
-        console.log(VibeName + " Set In Main Service");
     }
     ValueCount = ValueCount + await AccelerometerService.checkAvailable();
     ValueCount = ValueCount + await BarometerService.checkAvailable();

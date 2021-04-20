@@ -98,8 +98,8 @@ const GraphBody = (props) => {
                 }}>
                     <View style={{flexDirection: "row", height: 50, width:width * 0.88}}>
                         <View style={{flex: 0.6, justifyContent:'center'}}>
-                        {/* + "\nFrom "+getHMS(item.TimeRecord[0])+" To "+getHMS(item.TimeRecord[item.TimeRecord.length-1]) */}
                             <Text style={[CommonStyles.SubText(colors.primary),{textAlignVertical:'center',fontFamily: 'Montserrat-Bold'}]}>{item.VibeName[0].toUpperCase() + " " + item.BlockID.replace("Block","VYBE ")}</Text>
+                            <Text style={[CommonStyles.ParaText(colors.primary),{textAlign:'center'}]}>From {getHMS(item.TimeRecord[0])} To {getHMS(item.TimeRecord[item.TimeRecord.length-1])}</Text>
                         </View>
                         <TouchableOpacity 
                             style={{

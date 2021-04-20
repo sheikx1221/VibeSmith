@@ -10,9 +10,11 @@ import { v4 as uuidv4 } from 'uuid';
 import Cart from './Cart';
 import Payment from './Payments';
 import { EMAIL_API, AUTH_KEY } from '@env';
+import * as MailComposer from 'expo-mail-composer';
 
 const screens = ["Cart","UserInfo","Payment","SendLogs"];
 let _screenNow = "Cart";
+let manualOverride = false;
 const Mails = (props) => {
     const isFocused = useIsFocused();
     const { width, height } = Dimensions.get("window");
@@ -89,7 +91,6 @@ const Mails = (props) => {
                         setLoading("New Sensor Data file has been created!");
                         if(_screenNow === "SendLogs") setShowActivity(false);
                         setFilePath(filepath);
-                        setMessageIndex(3);
                     });
                 }, 3000);
             }
@@ -99,6 +100,7 @@ const Mails = (props) => {
         MainScroll.current.scrollTo({ y: 0, animated: true});
     }
     useEffect(()=>{
+        if(manualOverride) return;
         _screenNow = screenNow;
         scrollToTop();
         if(screenNow === "UserInfo") setMessageIndex(0);
@@ -126,17 +128,27 @@ const Mails = (props) => {
                     }
                 }
                 await fetch(EMAIL_API, data).then(res=>res.json()).then(result=>{
-                    if(result.err) throw result.err;
-                    console.log(result);
+                    if(!result.success) throw result.response.err;
+                    setMessageIndex(3);
                     setShowActivity(false);
                 }).catch(err=>{
                     console.log(err);
+                    setMessageIndex(3);
                     setScreenNow("ErrorWhileSendingVybes");
-                    Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err+"\n Kindly screen shot this and send to VybeSmith");
+                    Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err.code+"\n");
                     setShowActivity(false);
                 });
+                // setTimeout(() => {
+                //     setScreenNow("ErrorWhileSendingVybes");
+                //     Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: 400");
+                //     setShowActivity(false);
+                // }, 2000);
             }).catch(Err=>{
                 console.log(Err);
+                setMessageIndex(3);
+                setScreenNow("ErrorWhileSendingVybes");
+                Alert.alert("Failed to Send Vybes to VybeSmith","Internal Server Error: "+err.code+"\n");
+                setShowActivity(false);
             });
         }
     },[screenNow]);
@@ -309,7 +321,7 @@ const Mails = (props) => {
                             await SensorDatabase.needToRefresh("true");
                             await AsyncStorage.setItem("@VybeForm","");
                             setShowActivity(true);
-                            props.navigation.dangerouslyGetParent().navigate('TabMain');
+                            props.navigation.dangerouslyGetParent().navigate('TabWelcome');
                         }}>
                             <Text style={CommonStyles.VybeButtonText(colors.background)}>BACK TO VYBESMITH</Text>
                         </TouchableOpacity>
@@ -329,6 +341,23 @@ const Mails = (props) => {
                         setScreenNow("SendLogs");
                     }}>
                         <Text style={CommonStyles.VybeButtonText(colors.background)}>SEND VYBES AGAIN</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[CommonStyles.VybeButtonView(colors.border),{width: '60%', marginLeft: 20, marginTop: 30}]} onPress={async()=>{
+                        await MailComposer.composeAsync({
+                            subject: 'VybeSmith Sensor Data For User: '+name,
+                            recipients: ["VybeSmith@gmail.com"],
+                            body: `${device}\n${phone}\n${uuid}`,
+                            attachments: [filePath]
+                        }).then(res=>{
+                            console.log("res = ",res);
+                            manualOverride = true;
+                            setScreenNow("SendLogs");
+                            setShowActivity(false);
+                        }).catch(err=>{
+                            console.log(err);
+                        });
+                    }}>
+                        <Text style={CommonStyles.VybeButtonText(colors.background)}>SEND VIA MAIL SERVICE</Text>
                     </TouchableOpacity>
                 </View>                
             )}

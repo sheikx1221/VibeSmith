@@ -381,14 +381,14 @@ function getContents(UniqueID,dataRecords,blocksAdded){
 async function clearDatabase(blocksAdded){
     return new Promise(async(resolve, reject) => {
         for(let block of blocksAdded){
-            await db.transaction(tx => {
-                tx.executeSql('DELETE FROM SensorData WHERE BlockID = ?', [block],
-                  (txObj, res) => {
-                    //   console.log(res);
-                },
-                  (txObj, error) => {console.log(error)}
-                )
-            });
+            // await db.transaction(tx => {
+            //     tx.executeSql('DELETE FROM SensorData WHERE BlockID = ?', [block],
+            //       (txObj, res) => {
+            //         //   console.log(res);
+            //     },
+            //       (txObj, error) => {console.log(error)}
+            //     )
+            // });
             await db.transaction(tx => {
                 tx.executeSql('DELETE FROM SelectedBlocks WHERE BlockID = ?', [block],
                   (txObj, res) => {
