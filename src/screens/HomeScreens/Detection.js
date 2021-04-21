@@ -34,6 +34,11 @@ const Detection = (props) => {
             }
         }
         getBytesSaved();
+        return()=>{
+            if(!isFocused) {
+                if (vibeName === "" || activate === false) setVibeName(undefined);
+            }
+        }
     },[isFocused])
     useEffect(()=>{
         DeviceEventEmitter.addListener("updated-bytes",(updatedBytes)=>{
