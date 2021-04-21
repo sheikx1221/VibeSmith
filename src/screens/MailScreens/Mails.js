@@ -137,7 +137,6 @@ const Mails = (props) => {
                     }
                 }
                 await fetch(EMAIL_API, data).then(res=>res.json()).then(result=>{
-                    console.log(result);
                     if(!result.success) throw result.response.err;
                     setMessageIndex(3);
                     setShowActivity(false);
